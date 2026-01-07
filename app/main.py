@@ -17,7 +17,7 @@ def main():
                 sys.stdout.write(string + "\n")
             case "type":
                 if args[0] in builtins:
-                    sys.stdout.write(f"{args[0]}: is a shell builtin\n")
+                    sys.stdout.write(f"{args[0]} is a shell builtin\n")
                 else:
                     sys.stdout.write(f"{args[0]}: not found\n")
             case _:
