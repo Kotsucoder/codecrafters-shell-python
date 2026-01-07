@@ -1,34 +1,39 @@
 [![progress-banner](https://backend.codecrafters.io/progress/shell/1fa390d0-25a7-48c3-bab5-1a23b9e4ebda)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
 
-This is a starting point for Python solutions to the
-["Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview).
+# Custom Shell Implementation
 
-In this challenge, you'll build your own POSIX compliant shell that's capable of
-interpreting shell commands, running external programs and builtin commands like
-cd, pwd, echo and more. Along the way, you'll learn about shell command parsing,
-REPLs, builtin commands, and more.
+A POSIX-compliant shell implementation built in Python as part of the [CodeCrafters "Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview). This learning project demonstrates core systems programming concepts by implementing a functional command-line shell from scratch.
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+## Overview
 
-# Passing the first stage
+This project implements a custom shell interpreter capable of:
+- Parsing and executing shell commands
+- Running external programs
+- Supporting builtin commands (exit, echo, type)
+- Handling user input in a REPL (Read-Eval-Print Loop) environment
+- Processing command-line arguments
 
-The entry point for your `shell` implementation is in `app/main.py`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
+## Technical Skills Demonstrated
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
-```
+- **Systems Programming**: Understanding of shell internals and process management
+- **Command Parsing**: Tokenization and interpretation of shell commands
+- **REPL Design**: Interactive command-line interface implementation
+- **Python Development**: Object-oriented design and error handling
+- **POSIX Compliance**: Adherence to shell standards and conventions
 
-Time to move on to the next stage!
+## Project Structure
 
-# Stage 2 & beyond
+- `app/main.py` - Main shell implementation with builtin command handlers
+- `your_program.sh` - Entry point script for running the shell
 
-Note: This section is for stages 2 and beyond.
+## Running the Shell
 
 1. Ensure you have `uv` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `app/main.py`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+2. Run `./your_program.sh` to start the shell
+3. The shell will display a `$` prompt and accept commands
+
+## About CodeCrafters
+
+This project was completed as part of the CodeCrafters learning platform, which provides hands-on challenges for building real-world systems from scratch. The challenge focuses on understanding how shells work at a fundamental level, covering topics like command parsing, REPLs, builtin commands, and process execution.
+
+For more information about CodeCrafters and their challenges, visit [codecrafters.io](https://codecrafters.io).
