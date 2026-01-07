@@ -16,10 +16,14 @@ def main():
                 string = " ".join(args)
                 sys.stdout.write(string + "\n")
             case "type":
-                if args[0] in builtins:
-                    sys.stdout.write(f"{args[0]} is a shell builtin\n")
-                else:
-                    sys.stdout.write(f"{args[0]}: not found\n")
+                try:
+                    cmdlet = args[0]
+                    if args[0] in builtins:
+                        sys.stdout.write(f"{cmdlet} is a shell builtin\n")
+                    else:
+                        sys.stdout.write(f"{cmdlet}: not found\n")
+                except:
+                    sys.stdout.write(f"Empty argument\n")
             case _:
                 sys.stdout.write(f"{command}: command not found\n")
 
