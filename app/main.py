@@ -5,7 +5,7 @@ class Shell:
         self.builtins = {
             "exit": self.builtin_exit,
             "echo": self.builtin_echo,
-            "type": self.builtin_type,
+            "type": self.builtin_type
         }
 
     def builtin_exit(self, args):
@@ -18,13 +18,13 @@ class Shell:
 
     def builtin_type(self, args):
         try:
-            cmdlet = args[0]
-            if cmdlet in self.builtins:
-                sys.stdout.write(f"{cmdlet} is a shell builtin\n")
-                return True
-            else:
-                sys.stdout.write(f"{cmdlet}: not found\n")
-                return True
+            cmdtest = args[0]
+            for cmdlet in args:
+                if cmdlet in self.builtins:
+                    sys.stdout.write(f"{cmdlet} is a shell builtin\n")
+                else:
+                    sys.stdout.write(f"{cmdlet}: not found\n")
+            return True
         except:
             sys.stdout.write(f"Empty argument\n")
             return True
