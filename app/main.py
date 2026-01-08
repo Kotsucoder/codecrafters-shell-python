@@ -1,4 +1,5 @@
 import sys
+import os
 
 class Shell:
     def __init__(self):
@@ -14,16 +15,31 @@ class Shell:
     def builtin_echo(self, args):
         string = " ".join(args)
         sys.stdout.write(string + "\n")
-        return True
+        return True    
 
     def builtin_type(self, args):
+        path = os.getenv("PATH").split(":")
         try:
             cmdtest = args[0]
             for cmdlet in args:
                 if cmdlet in self.builtins:
                     sys.stdout.write(f"{cmdlet} is a shell builtin\n")
                 else:
-                    sys.stdout.write(f"{cmdlet}: not found\n")
+                    keep_checking = True
+                    while keep_checking:
+                        for directory in path:
+                            try:
+                                contents = os.listdir(directory)
+                                if cmdlet in contents:
+                                    file_path = f"{directory}/{cmdlet}"
+                                    if os.access(file_path, os.X_OK):
+                                        print(f"{cmdlet} is {file_path}")
+                                        keep_checking = False
+                            except FileNotFoundError:
+                                continue
+                        if keep_checking:
+                            sys.stdout.write(f"{cmdlet}: not found\n")
+                            keep_checking = False
             return True
         except:
             sys.stdout.write(f"Empty argument\n")
