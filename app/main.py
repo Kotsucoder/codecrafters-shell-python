@@ -2,12 +2,13 @@ import sys
 import os
 
 class Shell:
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.builtins = {
             "exit": self.builtin_exit,
             "echo": self.builtin_echo,
             "type": self.builtin_type
         }
+        self.verbose = verbose
 
     def find_exec(self, command):
         path = os.getenv("PATH").split(":")
@@ -34,7 +35,6 @@ class Shell:
         return True    
 
     def builtin_type(self, args):
-        path = os.getenv("PATH").split(":")
         try:
             cmdtest = args[0]
             for cmdlet in args:
@@ -51,6 +51,22 @@ class Shell:
             sys.stdout.write(f"Empty argument\n")
             return True
 
+    def exec_program(self, command, args):
+        exec_path = self.find_exec(command)
+        if exec_path:
+            pid = os.fork()
+            if pid == 0:
+                if self.verbose:
+                    print(f"Executing {exec_path} with args {args}")
+                full_args = args
+                full_args.insert(0, command)
+                os.execv(exec_path, full_args)
+            else:
+                os.waitpid(pid, 0)
+                return True
+        else:
+            return False
+
     def run(self):
         keep_running = True
         while keep_running:
@@ -62,14 +78,20 @@ class Shell:
                 if command in self.builtins:
                     keep_running = self.builtins[command](args)
                 else:
-                    sys.stdout.write(f"{command}: command not found\n")
+                    exec_success = self.exec_program(command, args)
+                    if not exec_success:
+                        sys.stdout.write(f"{command}: command not found\n")
             except KeyboardInterrupt:
                 print()
                 continue
 
 
 def main():
-    shell = Shell()
+    script_args = sys.argv
+    if "-v" in script_args:
+        shell = Shell(verbose=True)
+    else:
+        shell = Shell()
     shell.run()
 
 
