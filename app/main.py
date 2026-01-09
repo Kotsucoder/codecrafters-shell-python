@@ -9,6 +9,22 @@ class Shell:
             "type": self.builtin_type
         }
 
+    def find_exec(self, command):
+        path = os.getenv("PATH").split(":")
+        for directory in path:
+            try:
+                contents = os.listdir(directory)
+                if command in contents:
+                    if os.access(f"{directory}/{command}", os.X_OK):
+                        return f"{directory}/{command}"
+                    else:
+                        continue
+                else:
+                    continue
+            except FileNotFoundError:
+                continue
+        return None
+
     def builtin_exit(self, args):
         return False
 
@@ -25,21 +41,11 @@ class Shell:
                 if cmdlet in self.builtins:
                     sys.stdout.write(f"{cmdlet} is a shell builtin\n")
                 else:
-                    keep_checking = True
-                    while keep_checking:
-                        for directory in path:
-                            try:
-                                contents = os.listdir(directory)
-                                if cmdlet in contents:
-                                    file_path = f"{directory}/{cmdlet}"
-                                    if os.access(file_path, os.X_OK):
-                                        print(f"{cmdlet} is {file_path}")
-                                        keep_checking = False
-                            except FileNotFoundError:
-                                continue
-                        if keep_checking:
-                            sys.stdout.write(f"{cmdlet}: not found\n")
-                            keep_checking = False
+                    exec_path = self.find_exec(cmdlet)
+                    if exec_path:
+                        sys.stdout.write(f"{cmdlet} is {exec_path}\n")
+                    else:
+                        sys.stdout.write(f"{cmdlet}: not found\n")
             return True
         except:
             sys.stdout.write(f"Empty argument\n")
