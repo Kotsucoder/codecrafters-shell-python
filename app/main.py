@@ -3,6 +3,9 @@
 import sys
 import os
 
+os.environ['SHELL'] = os.path.abspath(sys.argv[0])
+version = "v0.9.3"
+
 class Shell:
     def __init__(self, verbose=False):
         self.builtins = {
@@ -61,7 +64,7 @@ class Shell:
         return True
     
     def builtin_about(self, args):
-        print("mkshell v0.9.2")
+        print(f"mkshell {version}")
         print("Developed by Marcus Kotsu")
         print("Based on Codecrafters")
         print("Follow on Bluesky: @kotsu.red")
@@ -109,11 +112,15 @@ class Shell:
 
 def main():
     script_args = sys.argv
-    if "-v" in script_args:
+    if "-v" in script_args or "--version" in script_args:
+        print(f"mkshell {version}")
+        sys.exit(0)
+    elif "-d" in script_args:
         shell = Shell(verbose=True)
+        shell.run()
     else:
         shell = Shell()
-    shell.run()
+        shell.run()
 
 
 if __name__ == "__main__":
