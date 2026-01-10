@@ -97,6 +97,9 @@ class Shell:
         
     def builtin_cd(self, args):
         path = args[0]
+        if path[0] == "~":
+            homedir = os.path.expanduser("~")
+            path = path.replace("~", homedir)
         if os.path.isdir(path):
             if self.verbose:
                 print("Success: Valid Path")
