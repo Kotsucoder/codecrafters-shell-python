@@ -4,7 +4,7 @@ import sys
 import os
 
 os.environ['SHELL'] = os.path.abspath(sys.argv[0])
-version = "v0.9.3"
+version = "v0.9.4"
 
 class Shell:
     def __init__(self, verbose=False):
@@ -37,9 +37,14 @@ class Shell:
         return False
 
     def builtin_echo(self, args):
-        string = " ".join(args)
-        sys.stdout.write(string + "\n")
-        return True    
+        for string in args:
+            if string[0] == "$":
+                content = os.getenv(string[1:]) + " "
+                sys.stdout.write(content)
+            else:
+                sys.stdout.write(string + " ")
+        print()
+        return True
 
     def builtin_type(self, args):
         try:
