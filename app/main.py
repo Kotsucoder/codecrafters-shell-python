@@ -53,8 +53,12 @@ class Shell:
             sys.stdout.write(f"Empty argument\n")
             return True
 
-    def exec_program(self, command, args):
-        exec_path = self.find_exec(command)
+    def exec_program(self, command, args): 
+        if os.path.isfile(command) and os.access(command, os.X_OK):
+            exec_path = command
+        else:
+            exec_path = self.find_exec(command)
+
         if exec_path:
             pid = os.fork()
             if pid == 0:
