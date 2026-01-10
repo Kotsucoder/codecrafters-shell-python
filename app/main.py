@@ -9,7 +9,8 @@ class Shell:
             "exit": self.builtin_exit,
             "echo": self.builtin_echo,
             "type": self.builtin_type,
-            "pwd": self.builtin_pwd
+            "pwd": self.builtin_pwd,
+            "about": self.builtin_about
         }
         self.verbose = verbose
 
@@ -57,6 +58,14 @@ class Shell:
     def builtin_pwd(self, args):
         current_directory = os.getcwd()
         print(current_directory)
+        return True
+    
+    def builtin_about(self, args):
+        print("mkshell v0.9.2")
+        print("Developed by Marcus Kotsu")
+        print("Based on Codecrafters")
+        print("Follow on Bluesky: @kotsu.red")
+        print("Follow on GitHub: @Kotsucoder")
         return True
 
     def exec_program(self, command, args): 
