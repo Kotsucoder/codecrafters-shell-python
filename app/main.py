@@ -8,7 +8,8 @@ class Shell:
         self.builtins = {
             "exit": self.builtin_exit,
             "echo": self.builtin_echo,
-            "type": self.builtin_type
+            "type": self.builtin_type,
+            "pwd": self.builtin_pwd
         }
         self.verbose = verbose
 
@@ -52,6 +53,11 @@ class Shell:
         except:
             sys.stdout.write(f"Empty argument\n")
             return True
+        
+    def builtin_pwd(self, args):
+        current_directory = os.getcwd()
+        print(current_directory)
+        return True
 
     def exec_program(self, command, args): 
         if os.path.isfile(command) and os.access(command, os.X_OK):
