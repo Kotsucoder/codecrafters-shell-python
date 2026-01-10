@@ -13,7 +13,8 @@ class Shell:
             "echo": self.builtin_echo,
             "type": self.builtin_type,
             "pwd": self.builtin_pwd,
-            "about": self.builtin_about
+            "about": self.builtin_about,
+            "export": self.builtin_export
         }
         self.verbose = verbose
 
@@ -39,8 +40,11 @@ class Shell:
     def builtin_echo(self, args):
         for string in args:
             if string[0] == "$":
-                content = os.getenv(string[1:]) + " "
-                sys.stdout.write(content)
+                try:
+                    content = os.getenv(string[1:]) + " "
+                    sys.stdout.write(content)
+                except KeyError:
+                    sys.stdout.write(string)
             else:
                 sys.stdout.write(string + " ")
         print()
@@ -75,6 +79,20 @@ class Shell:
         print("Follow on Bluesky: @kotsu.red")
         print("Follow on GitHub: @Kotsucoder")
         return True
+    
+    def builtin_export(self, args):
+        if self.verbose:
+            print(args)
+        for var_setter in args:
+            if self.verbose:
+                print(f"Working on {var_setter}")
+            var_setter = var_setter.split("=")
+            var_name = var_setter[0]
+            var_content = var_setter[1]
+            if self.verbose:
+                print(f"Setting variable {var_name} to {var_content}")
+            os.environ[var_name] = var_content
+            return True
 
     def exec_program(self, command, args): 
         if os.path.isfile(command) and os.access(command, os.X_OK):
