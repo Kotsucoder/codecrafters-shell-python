@@ -14,7 +14,8 @@ class Shell:
             "type": self.builtin_type,
             "pwd": self.builtin_pwd,
             "about": self.builtin_about,
-            "export": self.builtin_export
+            "export": self.builtin_export,
+            "cd": self.builtin_cd
         }
         self.verbose = verbose
 
@@ -93,6 +94,18 @@ class Shell:
                 print(f"Setting variable {var_name} to {var_content}")
             os.environ[var_name] = var_content
             return True
+        
+    def builtin_cd(self, args):
+        path = args[0]
+        if os.path.isdir(path):
+            if self.verbose:
+                print("Success: Valid Path")
+            os.chdir(path)
+        else:
+            if self.verbose:
+                print("Failure: Invalid Path")
+            print(f"cd: {path}: No such file or directory")
+        return True
 
     def exec_program(self, command, args): 
         if os.path.isfile(command) and os.access(command, os.X_OK):
