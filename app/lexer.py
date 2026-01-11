@@ -103,6 +103,7 @@ def expander(object_set:List[SemanticToken]) -> List[str]:
             current_word = ""
             for char in token:
                 if char == " ":
+                    current_word = current_word + char
                     if current_word:
                         words.append(current_word)
                         current_word = ""
