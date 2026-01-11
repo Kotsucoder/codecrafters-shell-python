@@ -23,7 +23,7 @@ def command_lexer(usrinput:str) -> List[SemanticToken]:
         for char in usrinput:
             if char == "\\" and not escaped:
                 if in_quotes and token_has_quotes == QuoteState.SINGLE:
-                    continue
+                    current_word = current_word + char
                 else:
                     escaped = True
             elif escaped:
