@@ -4,7 +4,7 @@ import sys
 import os
 
 os.environ['SHELL'] = os.path.abspath(sys.argv[0])
-version = "v0.9.4"
+version = "v0.10.2"
 
 class Shell:
     def __init__(self, verbose=False):
