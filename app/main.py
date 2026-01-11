@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.10
 
 import sys
 import os
@@ -35,47 +35,46 @@ class Shell:
                 continue
         return None
     
-    def parse_input(self, usrinput:str):
-        naive_split = usrinput.split(" ")
-        command = naive_split[0]
-        args = []
-        long_arg = False
-        for token in naive_split[1:]:
-            try:
-                if token[0] == "'" and not long_arg:
-                    long_parse = token
-                    long_arg = True
-                    if token[-1] == "'":
-                        long_arg = False
-                        if len(long_parse) > 2:
-                            long_parse = long_parse[1:-1]
-                            semantic_object = [long_parse, True]
-                            args.append(semantic_object)
-                        else:
-                            continue
-                elif long_arg:
-                    long_parse = long_parse + " " + token
-                    if token[-1] == "'":
-                        long_arg = False
-                        if len(long_parse) > 2:
-                            long_parse = long_parse[1:-1]
-                            semantic_object = [long_parse, True]
-                            args.append(semantic_object)
-                        else:
-                            continue
+    def command_lexer(self, usrinput:str):
+        # TODO: Handle edge case abc'def' in a later build.
+        tokens = []
+        current_word = ""
+        in_quotes = False
+        token_has_quotes = False
+
+        for char in usrinput:
+            if char == "'":
+                if in_quotes:
+                    in_quotes = False
                 else:
-                    semantic_object = [token, False]
-                    args.append(semantic_object)
-            except IndexError:
-                if long_arg:
-                    long_parse = long_parse + " "
+                    in_quotes = True
+                    token_has_quotes = True
+            elif char == " ":
+                if in_quotes:
+                    current_word = current_word + char
                 else:
-                    continue
+                    if token_has_quotes:
+                        semantic_token = [current_word, True]
+                        token_has_quotes = False
+                    else:
+                        if current_word:
+                            semantic_token = [current_word, False]
+                    tokens.append(semantic_token)
+                    current_word = ""
+            else:
+                current_word = current_word + char
         
-        if self.verbose:
-            print(f"Command is {command}")
-            print(f"args is {args}")
-        return command, args
+        if current_word and token_has_quotes:
+            semantic_token = [current_word, True]
+            tokens.append(semantic_token)
+        elif token_has_quotes:
+            semantic_token = [current_word, True]
+            tokens.append(semantic_token)
+        elif current_word and not token_has_quotes:
+            semantic_token = [current_word, False]
+            tokens.append(semantic_token)
+
+        return tokens
 
     def builtin_exit(self, args):
         return False
@@ -186,7 +185,9 @@ class Shell:
             try:
                 sys.stdout.write("$ ")
                 request = input()
-                command, args = self.parse_input(request)
+                tokens = self.command_lexer(request)
+                command = tokens[0][0]
+                args = tokens[1:]
                 if command in self.builtins:
                     keep_running = self.builtins[command](args)
                 else:
