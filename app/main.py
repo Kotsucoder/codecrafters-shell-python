@@ -1,4 +1,9 @@
 #!/usr/bin/env python3.10
+# TODO: Rework export builtin
+# TODO: Refactor environment variable expansion to take place after the lexer runs.
+# TODO: Refactor all methods to utilize type checking
+# TODO: Add support for wildcards
+# TODO: Add support for logical operators
 
 import sys
 import os
@@ -36,7 +41,6 @@ class Shell:
         return None
     
     def command_lexer(self, usrinput:str):
-        # TODO: Handle edge case abc'def' in a later build.
         tokens = []
         current_word = ""
         in_quotes = False
@@ -127,7 +131,6 @@ class Shell:
         return True
     
     def builtin_export(self, args):
-        # TODO: Add support for quotes in environment variables
         if self.verbose:
             print(args)
         for semantic_var_setter in args:
