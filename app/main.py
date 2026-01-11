@@ -55,11 +55,12 @@ class Shell:
                 else:
                     if token_has_quotes:
                         semantic_token = [current_word, True]
+                        tokens.append(semantic_token)
                         token_has_quotes = False
                     else:
                         if current_word:
                             semantic_token = [current_word, False]
-                    tokens.append(semantic_token)
+                            tokens.append(semantic_token)
                     current_word = ""
             else:
                 current_word = current_word + char
