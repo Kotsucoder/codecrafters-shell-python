@@ -45,13 +45,31 @@ class Shell:
         current_word = ""
         in_quotes = False
         token_has_quotes = False
+        single_quotes = False
+        double_quotes = False
 
         for char in usrinput:
             if char == "'":
                 if in_quotes:
-                    in_quotes = False
+                    if single_quotes:
+                        in_quotes = False
+                        single_quotes = False
+                    else:
+                        current_word = current_word + char
                 else:
                     in_quotes = True
+                    single_quotes = True
+                    token_has_quotes = True
+            elif char == '"':
+                if in_quotes:
+                    if double_quotes:
+                        in_quotes = False
+                        double_quotes = False
+                    else:
+                        current_word = current_word + char
+                else:
+                    in_quotes = True
+                    double_quotes = True
                     token_has_quotes = True
             elif char == " ":
                 if in_quotes:
