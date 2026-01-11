@@ -2,9 +2,9 @@
 
 import sys
 import os
-import lexer
-import shell_builtins
-import executor
+from app import lexer
+from app import shell_builtins
+from app import executor
 
 os.environ['SHELL'] = os.path.abspath(sys.argv[0])
 version = "v0.11"

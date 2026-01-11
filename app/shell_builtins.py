@@ -1,7 +1,7 @@
 import sys
 import os
-import executor
-from main import version
+from app import executor
+from app.main import version
 from typing import List
 
 class Builtins:
