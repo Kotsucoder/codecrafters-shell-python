@@ -21,8 +21,11 @@ def command_lexer(usrinput:str) -> List[SemanticToken]:
         escaped = False
 
         for char in usrinput:
-            if char == "\\" and not in_quotes and token_has_quotes != QuoteState.SINGLE:
-                escaped = True
+            if char == "\\":
+                if in_quotes and token_has_quotes == QuoteState.SINGLE:
+                    continue
+                else:
+                    escaped = True
             elif escaped:
                 current_word = current_word + char
                 escaped = False
