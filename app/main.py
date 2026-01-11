@@ -36,35 +36,41 @@ class Shell:
         return None
     
     def parse_input(self, usrinput:str):
-        naive_split = usrinput.split()
+        naive_split = usrinput.split(" ")
         command = naive_split[0]
         args = []
         long_arg = False
         for token in naive_split[1:]:
-            if token[0] == "'" and not long_arg:
-                long_parse = token
-                long_arg = True
-                if token[-1] == "'":
-                    long_arg = False
-                    if len(long_parse) > 2:
-                        long_parse = long_parse[1:-1]
-                        semantic_object = [long_parse, True]
-                        args.append(semantic_object)
-                    else:
-                        continue
-            elif long_arg:
-                long_parse = long_parse + " " + token
-                if token[-1] == "'":
-                    long_arg = False
-                    if len(long_parse) > 2:
-                        long_parse = long_parse[1:-1]
-                        semantic_object = [long_parse, True]
-                        args.append(semantic_object)
-                    else:
-                        continue
-            else:
-                semantic_object = [token, False]
-                args.append(semantic_object)
+            try:
+                if token[0] == "'" and not long_arg:
+                    long_parse = token
+                    long_arg = True
+                    if token[-1] == "'":
+                        long_arg = False
+                        if len(long_parse) > 2:
+                            long_parse = long_parse[1:-1]
+                            semantic_object = [long_parse, True]
+                            args.append(semantic_object)
+                        else:
+                            continue
+                elif long_arg:
+                    long_parse = long_parse + " " + token
+                    if token[-1] == "'":
+                        long_arg = False
+                        if len(long_parse) > 2:
+                            long_parse = long_parse[1:-1]
+                            semantic_object = [long_parse, True]
+                            args.append(semantic_object)
+                        else:
+                            continue
+                else:
+                    semantic_object = [token, False]
+                    args.append(semantic_object)
+            except IndexError:
+                if long_arg:
+                    long_parse = long_parse + " "
+                else:
+                    continue
         
         if self.verbose:
             print(f"Command is {command}")
