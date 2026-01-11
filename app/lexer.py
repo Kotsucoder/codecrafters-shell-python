@@ -99,24 +99,9 @@ def expander(object_set:List[SemanticToken]) -> List[str]:
                 continue
 
         elif state == QuoteState.DOUBLE:
-            words = []
-            current_word = ""
-            for char in token:
-                if char == " ":
-                    current_word = current_word + char
-                    if current_word:
-                        words.append(current_word)
-                        current_word = ""
-                else:
-                    current_word = current_word + char
-            if current_word:
-                words.append(current_word)
-                current_word = ""
-
-            for word in words:
-                if word[0] == "$":
-                    variable_name = word[1:]
-                    word = os.environ[variable_name]
-                str_list.append(word)
+            expanded_value = token
+            for key, val in os.environ.items():
+                expanded_value = expanded_value.replace(f"{key}", val)
+            str_list.append(expanded_value)
 
     return str_list
