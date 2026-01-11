@@ -19,16 +19,29 @@ def command_lexer(usrinput:str) -> List[SemanticToken]:
         in_quotes = False
         token_has_quotes = QuoteState.NONE
         escaped = False
+        escape_conditional = False
 
         for char in usrinput:
             if char == "\\" and not escaped:
                 if in_quotes and token_has_quotes == QuoteState.SINGLE:
                     current_word = current_word + char
+                elif in_quotes and token_has_quotes == QuoteState.DOUBLE:
+                    escaped = True
+                    escape_conditional = True
                 else:
                     escaped = True
             elif escaped:
-                current_word = current_word + char
-                escaped = False
+                if escape_conditional:
+                    conditions = ['"', "\\", "$", "`", "\n"]
+                    if char in conditions:
+                        current_word = current_word + char
+                    else:
+                        current_word = current_word + "\\" + char
+                    escaped = False
+                    escape_conditional = False
+                else:
+                    current_word = current_word + char
+                    escaped = False
             elif char == "'":
                 if in_quotes:
                     if token_has_quotes == QuoteState.SINGLE:
