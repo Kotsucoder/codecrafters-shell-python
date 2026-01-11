@@ -34,19 +34,57 @@ class Shell:
             except FileNotFoundError:
                 continue
         return None
+    
+    def parse_input(self, usrinput:str):
+        naive_split = usrinput.split()
+        command = naive_split[0]
+        args = []
+        long_arg = False
+        for token in naive_split[1:]:
+            if token[0] == "'" and not long_arg:
+                long_parse = token
+                long_arg = True
+                if token[-1] == "'":
+                    long_arg = False
+                    if len(long_parse) > 2:
+                        long_parse = long_parse[1:-1]
+                        semantic_object = [long_parse, True]
+                        args.append(semantic_object)
+                    else:
+                        continue
+            elif long_arg:
+                long_parse = long_parse + " " + token
+                if token[-1] == "'":
+                    long_arg = False
+                    if len(long_parse) > 2:
+                        long_parse = long_parse[1:-1]
+                        semantic_object = [long_parse, True]
+                        args.append(semantic_object)
+                    else:
+                        continue
+            else:
+                semantic_object = [token, False]
+                args.append(semantic_object)
+        
+        if self.verbose:
+            print(f"Command is {command}")
+            print(f"args is {args}")
+        return command, args
 
     def builtin_exit(self, args):
         return False
 
     def builtin_echo(self, args):
-        for string in args:
-            if string[0] == "$":
+        for semantic_object in args:
+            if semantic_object[0][0] == "$" and not semantic_object[1]:
+                string = semantic_object[0]
                 try:
                     content = os.getenv(string[1:]) + " "
                     sys.stdout.write(content)
                 except KeyError:
                     sys.stdout.write(string)
             else:
+                string = semantic_object[0]
                 sys.stdout.write(string + " ")
         print()
         return True
@@ -54,7 +92,8 @@ class Shell:
     def builtin_type(self, args):
         try:
             cmdtest = args[0]
-            for cmdlet in args:
+            for semantic_cmdlet in args:
+                cmdlet = semantic_cmdlet[0]
                 if cmdlet in self.builtins:
                     sys.stdout.write(f"{cmdlet} is a shell builtin\n")
                 else:
@@ -82,9 +121,11 @@ class Shell:
         return True
     
     def builtin_export(self, args):
+        # TODO: Add support for quotes in environment variables
         if self.verbose:
             print(args)
-        for var_setter in args:
+        for semantic_var_setter in args:
+            var_setter = semantic_var_setter[0]
             if self.verbose:
                 print(f"Working on {var_setter}")
             var_setter = var_setter.split("=")
@@ -96,7 +137,7 @@ class Shell:
             return True
         
     def builtin_cd(self, args):
-        path = args[0]
+        path = args[0][0]
         if path[0] == "~":
             homedir = os.path.expanduser("~")
             path = path.replace("~", homedir)
@@ -110,7 +151,10 @@ class Shell:
             print(f"cd: {path}: No such file or directory")
         return True
 
-    def exec_program(self, command, args): 
+    def exec_program(self, command, args):
+        set_args = []
+        for semantics in args:
+            set_args.append(semantics[0])
         if os.path.isfile(command) and os.access(command, os.X_OK):
             exec_path = command
         else:
@@ -120,8 +164,8 @@ class Shell:
             pid = os.fork()
             if pid == 0:
                 if self.verbose:
-                    print(f"Executing {exec_path} with args {args}")
-                full_args = args
+                    print(f"Executing {exec_path} with args {full_args}")
+                full_args = set_args
                 full_args.insert(0, command)
                 os.execv(exec_path, full_args)
             else:
@@ -135,9 +179,8 @@ class Shell:
         while keep_running:
             try:
                 sys.stdout.write("$ ")
-                request = input().split()
-                command = request[0]
-                args = request[1:]
+                request = input()
+                command, args = self.parse_input(request)
                 if command in self.builtins:
                     keep_running = self.builtins[command](args)
                 else:
