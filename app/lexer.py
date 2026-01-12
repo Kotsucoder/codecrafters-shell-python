@@ -12,6 +12,21 @@ class QuoteState(Enum):
 class SemanticToken:
     value: str
     state: QuoteState
+    redirector: bool
+
+redirect = False
+
+def set_redirect():
+    global redirect
+    redirect = True
+
+def read_redirect() -> bool:
+    global redirect
+    if redirect:
+        redirect = False
+        return True
+    else:
+        return False
 
 def command_lexer(usrinput:str) -> List[SemanticToken]:
         tokens = []
@@ -65,25 +80,28 @@ def command_lexer(usrinput:str) -> List[SemanticToken]:
                     current_word = current_word + char
                 else:
                     if token_has_quotes is not QuoteState.NONE:
-                        semantic_token = SemanticToken(current_word, token_has_quotes)
+                        semantic_token = SemanticToken(current_word, token_has_quotes, read_redirect())
                         tokens.append(semantic_token)
                         token_has_quotes = QuoteState.NONE
                     else:
                         if current_word:
-                            semantic_token = SemanticToken(current_word, QuoteState.NONE)
+                            semantic_token = SemanticToken(current_word, QuoteState.NONE, read_redirect())
                             tokens.append(semantic_token)
                     current_word = ""
+            elif char == ">":
+                current_word = current_word + char
+                set_redirect()
             else:
                 current_word = current_word + char
         
         if current_word and token_has_quotes is not QuoteState.NONE:
-            semantic_token = SemanticToken(current_word, token_has_quotes)
+            semantic_token = SemanticToken(current_word, token_has_quotes, read_redirect())
             tokens.append(semantic_token)
         elif token_has_quotes is not QuoteState.NONE:
-            semantic_token = SemanticToken(current_word, token_has_quotes)
+            semantic_token = SemanticToken(current_word, token_has_quotes, read_redirect())
             tokens.append(semantic_token)
         elif current_word and token_has_quotes is QuoteState.NONE:
-            semantic_token = SemanticToken(current_word, QuoteState.NONE)
+            semantic_token = SemanticToken(current_word, QuoteState.NONE, read_redirect())
             tokens.append(semantic_token)
 
         return tokens
@@ -121,3 +139,25 @@ def expander(object_set:List[SemanticToken]) -> List[str]:
             str_list.append(expanded_value)
 
     return str_list
+
+
+def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[SemanticToken], List[SemanticToken]]:
+    redirect_state = False
+    command_tokens = []
+    redirect_tokens = []
+
+    for token in semantic_tokens:
+        if redirect_state:
+            redirect_tokens.append(token)
+        else:
+            if token.redirector:
+                redirect_state = True
+                token_contents = token.value
+                split_token = token_contents.split('>')
+                command_semantic_token = SemanticToken(split_token[0], token.state, False)
+                redirect_semantic_token = SemanticToken(split_token[1], token.state, False)
+                command_tokens.append(command_semantic_token)
+                redirect_tokens.append(redirect_semantic_token)
+            else:
+                command_tokens.append(token)
+    return command_tokens, redirect_tokens

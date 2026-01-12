@@ -27,8 +27,7 @@ class Builtins:
         return False
     
     def echo(self, args:List[str]) -> bool:
-        sys.stdout.write(" ".join(args))
-        print()
+        executor.write_stdout(" ".join(args) + '\n')
         return True
     
     def type(self, args:List[str]) -> bool:
@@ -36,29 +35,29 @@ class Builtins:
             cmdtest = args[0]
             for cmdlet in args:
                 if cmdlet in self.builtins:
-                    sys.stdout.write(f"{cmdlet} is a shell builtin\n")
+                    executor.write_stdout(f"{cmdlet} is a shell builtin\n")
                 else:
                     exec_path = executor.find_exec(cmdlet)
                     if exec_path:
-                        sys.stdout.write(f"{cmdlet} is {exec_path}\n")
+                        executor.write_stdout(f"{cmdlet} is {exec_path}\n")
                     else:
-                        sys.stdout.write(f"{cmdlet}: not found\n")
+                        executor.write_stdout(f"{cmdlet}: not found\n")
             return True
         except:
-            sys.stdout.write(f"Empty argument\n")
+            executor.write_stdout(f"Empty argument\n")
             return True
     
     def pwd(self, args:List[str]) -> bool:
         current_directory = os.getcwd()
-        print(current_directory)
+        executor.write_stdout(current_directory)
         return True
     
     def about(self, args:List[str]) -> bool:
-        print(f"mkshell {version}")
-        print("Developed by Marcus Kotsu")
-        print("Based on Codecrafters")
-        print("Follow on Bluesky: @kotsu.red")
-        print("Follow on GitHub: @Kotsucoder")
+        executor.write_stdout(f"mkshell {version}\n")
+        executor.write_stdout("Developed by Marcus Kotsu\n")
+        executor.write_stdout("Based on Codecrafters\n")
+        executor.write_stdout("Follow on Bluesky: @kotsu.red\n")
+        executor.write_stdout("Follow on GitHub: @Kotsucoder\n")
         return True
     
     def export(self, args:List[str]) -> bool:
@@ -74,5 +73,5 @@ class Builtins:
         if os.path.isdir(path):
             os.chdir(path)
         else:
-            print(f"cd: {path}: No such file or directory")
+            executor.write_stdout(f"cd: {path}: No such file or directory\n")
         return True

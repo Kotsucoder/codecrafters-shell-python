@@ -7,7 +7,7 @@ from app import shell_builtins
 from app import executor
 
 os.environ['SHELL'] = os.path.abspath(sys.argv[0])
-version = "v0.11"
+version = "v0.12"
 
 class Shell:
     def __init__(self, verbose=False):
@@ -18,10 +18,14 @@ class Shell:
         keep_running = True
         while keep_running:
             try:
-                sys.stdout.write("$ ")
+                executor.write_stdout("$ ")
                 request = input()
                 tokens = lexer.command_lexer(request)
-                expanded_commands = lexer.expander(tokens)
+                command_tokens, redirect_tokens = lexer.redirect_output_tokens(tokens)
+                expanded_commands = lexer.expander(command_tokens)
+                expanded_redirects = lexer.expander(redirect_tokens)
+                executor.set_output(expanded_redirects)
+                executor.create_file()
                 command = expanded_commands[0]
                 args = expanded_commands[1:]
                 if command in builtins.get_builtins():
@@ -29,9 +33,11 @@ class Shell:
                 else:
                     exec_success = executor.exec_program(command, args)
                     if not exec_success:
-                        sys.stdout.write(f"{command}: command not found\n")
+                        executor.write_stdout(f"{command}: command not found\n")
+                executor.flush_output()
             except KeyboardInterrupt:
                 print()
+                executor.flush_output()
                 continue
 
 
