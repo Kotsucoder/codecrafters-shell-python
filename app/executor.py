@@ -1,5 +1,6 @@
 import sys
 import os
+import subprocess
 from typing import List
 
 output_redirect = ""
@@ -22,6 +23,7 @@ def find_exec(command:str) -> str | None:
         return None
 
 def exec_program(command:str, args:List[str]) -> bool:
+    global output_redirect
     set_args = args
     if os.path.isfile(command) and os.access(command, os.X_OK):
         exec_path = command
@@ -29,14 +31,14 @@ def exec_program(command:str, args:List[str]) -> bool:
         exec_path = find_exec(command)
 
     if exec_path:
-        pid = os.fork()
-        if pid == 0:
-            full_args = set_args
-            full_args.insert(0, command)
-            os.execv(exec_path, full_args)
+        full_args = set_args
+        full_args.insert(0, command)
+        if output_redirect:
+            result = subprocess.run(full_args, capture_output=True, text=True, check=False)
+            write_stdout(result.stdout)
         else:
-            os.waitpid(pid, 0)
-            return True
+            subprocess.run(full_args, capture_output=False)
+        return True
     else:
         return False
     
