@@ -44,12 +44,12 @@ class Builtins:
                         executor.write_errout(f"{cmdlet}: not found\n")
             return True
         except:
-            executor.write_stdout(f"Empty argument\n")
+            executor.write_errout(f"Empty argument\n")
             return True
     
     def pwd(self, args:List[str]) -> bool:
         current_directory = os.getcwd()
-        executor.write_stdout(current_directory)
+        executor.write_stdout(current_directory + '\n')
         return True
     
     def about(self, args:List[str]) -> bool:
