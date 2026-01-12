@@ -61,6 +61,9 @@ def write_stdout(content:str):
     else:
         sys.stdout.write(content)
 
+def write_errout(content:str):
+    sys.stdout.write(content)
+
 def set_output(path_tokens:List[str]):
     global output_redirect
     output_redirect = " ".join(path_tokens)

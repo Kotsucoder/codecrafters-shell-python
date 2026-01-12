@@ -41,7 +41,7 @@ class Builtins:
                     if exec_path:
                         executor.write_stdout(f"{cmdlet} is {exec_path}\n")
                     else:
-                        executor.write_stdout(f"{cmdlet}: not found\n")
+                        executor.write_errout(f"{cmdlet}: not found\n")
             return True
         except:
             executor.write_stdout(f"Empty argument\n")
@@ -73,5 +73,5 @@ class Builtins:
         if os.path.isdir(path):
             os.chdir(path)
         else:
-            executor.write_stdout(f"cd: {path}: No such file or directory\n")
+            executor.write_errout(f"cd: {path}: No such file or directory\n")
         return True

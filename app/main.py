@@ -33,7 +33,7 @@ class Shell:
                 else:
                     exec_success = executor.exec_program(command, args)
                     if not exec_success:
-                        executor.write_stdout(f"{command}: command not found\n")
+                        executor.write_errout(f"{command}: command not found\n")
                 executor.flush_output()
             except KeyboardInterrupt:
                 print()
