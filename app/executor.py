@@ -36,6 +36,7 @@ def exec_program(command:str, args:List[str]) -> bool:
         if output_redirect:
             result = subprocess.run(full_args, capture_output=True, text=True, check=False)
             write_stdout(result.stdout)
+            write_errout(result.stderr)
         else:
             subprocess.run(full_args, capture_output=False)
         return True
