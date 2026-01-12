@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import List
+import app.executor
 
 class QuoteState(Enum):
     NONE = auto()
@@ -156,6 +157,9 @@ def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[Se
                 split_token = token_contents.split('>')
                 if split_token[0] and split_token[0][-1] == "1":
                     split_token[0] = split_token[0][0:-1]
+                elif split_token[0] and split_token[0][-1] == "2":
+                    split_token[0] = split_token[0][0:-1]
+                    app.executor.set_err()
                 command_semantic_token = SemanticToken(split_token[0], token.state, False)
                 redirect_semantic_token = SemanticToken(split_token[1], token.state, False)
                 command_tokens.append(command_semantic_token)
