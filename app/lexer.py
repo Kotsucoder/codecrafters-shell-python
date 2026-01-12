@@ -154,7 +154,7 @@ def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[Se
                 redirect_state = True
                 token_contents = token.value
                 split_token = token_contents.split('>')
-                if split_token[0][-1] == "1":
+                if split_token[0] and split_token[0][-1] == "1":
                     split_token[0] = split_token[0][0:-1]
                 command_semantic_token = SemanticToken(split_token[0], token.state, False)
                 redirect_semantic_token = SemanticToken(split_token[1], token.state, False)
