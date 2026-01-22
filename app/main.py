@@ -7,7 +7,7 @@ from app import shell_builtins
 from app import executor
 
 os.environ['SHELL'] = os.path.abspath(sys.argv[0])
-version = "v0.12"
+version = "v0.13"
 
 class Shell:
     def __init__(self, verbose=False):
@@ -21,11 +21,12 @@ class Shell:
                 executor.write_stdout("$ ")
                 request = input()
                 tokens = lexer.command_lexer(request)
-                command_tokens, redirect_tokens = lexer.redirect_output_tokens(tokens)
+                command_tokens, redirect_tokens, redirect_type = lexer.redirect_output_tokens(tokens)
                 expanded_commands = lexer.expander(command_tokens)
                 expanded_redirects = lexer.expander(redirect_tokens)
                 executor.set_output(expanded_redirects)
-                executor.create_file()
+                if redirect_type == lexer.RedirectType.SIMPLE:
+                    executor.create_file()
                 command = expanded_commands[0]
                 args = expanded_commands[1:]
                 if command in builtins.get_builtins():

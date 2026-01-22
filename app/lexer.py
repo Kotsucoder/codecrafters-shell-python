@@ -9,6 +9,11 @@ class QuoteState(Enum):
     SINGLE = auto()
     DOUBLE = auto()
 
+class RedirectType(Enum):
+    NONE = auto()
+    SIMPLE = auto()
+    APPEND = auto()
+
 @dataclass(frozen=True)
 class SemanticToken:
     value: str
@@ -142,10 +147,12 @@ def expander(object_set:List[SemanticToken]) -> List[str]:
     return str_list
 
 
-def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[SemanticToken], List[SemanticToken]]:
+def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[SemanticToken], List[SemanticToken], RedirectType]:
+
     redirect_state = False
     command_tokens = []
     redirect_tokens = []
+    redirect_type = RedirectType.NONE
 
     for token in semantic_tokens:
         if redirect_state:
@@ -154,7 +161,14 @@ def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[Se
             if token.redirector:
                 redirect_state = True
                 token_contents = token.value
-                split_token = token_contents.split('>')
+                if '>>' in token_contents:
+                    redirect_type = RedirectType.APPEND
+                    split_token = token_contents.split('>>')
+                elif '>' in token_contents:
+                    redirect_type = RedirectType.SIMPLE
+                    split_token = token_contents.split('>')
+                else:
+                    raise Exception('Something went wrong with parsing redirects')
                 if split_token[0] and split_token[0][-1] == "1":
                     split_token[0] = split_token[0][0:-1]
                 elif split_token[0] and split_token[0][-1] == "2":
@@ -166,4 +180,4 @@ def redirect_output_tokens(semantic_tokens:List[SemanticToken]) -> tuple[List[Se
                 redirect_tokens.append(redirect_semantic_token)
             else:
                 command_tokens.append(token)
-    return command_tokens, redirect_tokens
+    return command_tokens, redirect_tokens, redirect_type
