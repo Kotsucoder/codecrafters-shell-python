@@ -25,8 +25,9 @@ class Shell:
                 expanded_commands = lexer.expander(command_tokens)
                 expanded_redirects = lexer.expander(redirect_tokens)
                 executor.set_output(expanded_redirects)
-                if redirect_type == lexer.RedirectType.SIMPLE:
-                    executor.create_file()
+                overwrite = (redirect_type == lexer.RedirectType.SIMPLE)
+                executor.create_file(overwrite)
+                    
                 command = expanded_commands[0]
                 args = expanded_commands[1:]
                 if command in builtins.get_builtins():

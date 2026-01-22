@@ -44,11 +44,14 @@ def exec_program(command:str, args:List[str]) -> bool:
     else:
         return False
     
-def create_file():
+def create_file(overwrite:bool=True):
     global output_redirect
-    if output_redirect:
+    if output_redirect and overwrite:
         file = open(output_redirect, 'w')
         file.close()
+    elif output_redirect and not overwrite:
+        if not os.path.isfile(output_redirect):
+            file = open(output_redirect, 'w')
 
 def write_stdout(content:str):
     global output_redirect
